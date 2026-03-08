@@ -1,0 +1,65 @@
+#ifndef HYPERTHREADINGSIMULATOR_H
+#define HYPERTHREADINGSIMULATOR_H
+#include "VirtualThread.h"
+class HyperThreadingSimulator {
+private:
+    VirtualThread vt1;
+    VirtualThread vt2;
+public:
+    HyperThreadingSimulatr() : vt1(1), vt2(2) {}
+    void execute() {
+        while (vt1.hasTasks() || vt2.hasTasks()) {
+            if (vt1.hasTasks()) {
+                vt1.run();
+                vt2.increaseCurrentIndex();
+            }
+            if (vt2.hasTasks()) {
+                vt2.run();
+                vt1.increaseCurrentIndex();
+            }
+        }
+    }
+};
+#endif
+
+
+
+#ifndef VIRTUALTHREAD_H
+#define VIRTUALTHREAD_H
+#include <iostream>
+class VirtualThread {
+private:
+    int arr[4] = {5, 7, 10, 12};
+    int id;
+    short currentIndex;
+    long long factorial(int n) {
+        if (n == 1 || n == 0) return 1;
+        return n * factorial(n - 1);
+    }
+public:
+    VirtualThread(int id) : id(id), currentIndex(0) {}
+    bool hasTasks() {
+        return currentIndex < 4;
+    }
+    void increaseCurrentIndex() {
+        currentIndex++;
+    void run() {
+        int n = arr[currentIndex];
+        long long result = factorial(n);
+        std::cout << "Виртуальный поток " << id << " вычисляет " << n << "! = " << result << std::endl;
+        increaseCurrentIndex();
+    }  
+};
+#endif
+
+
+
+
+
+
+#include "HyperThreadingSimulator.h"
+int main() {
+    HyperThreadingSimulator hts;
+    hts.execute();
+    return 0;
+}
